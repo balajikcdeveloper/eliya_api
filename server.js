@@ -16,6 +16,7 @@ connectDB();
 
 //Route files
 const wallets = require('./routes/wallets');
+const auth = require('./routes/auth');
 
 const app = express();
 
@@ -29,6 +30,7 @@ if (CURRENT_ENV === 'development') {
 
 //Mount Routes
 app.use('/api/v1/wallets', wallets);
+app.use('/api/v1/auth', auth);
 
 app.use(errorHandler);
 

@@ -6,7 +6,7 @@ const asyncHandler = require('../middleware/async');
 // @route       GET /api/v1/wallets
 // @access      Private
 exports.getWallets = (req, res, next) => {
-  res.status(200).json({ success: true, msg: 'Show all wallets' });
+  res.status(200).json(res.advancedResults);
 };
 
 // @desc        Get single wallet
@@ -37,17 +37,36 @@ exports.createWallet = asyncHandler(async (req, res, next) => {
 // @desc        Update new wallet
 // @route       PUT /api/v1/wallets/:id
 // @access      Private
-exports.updateWallet = (req, res, next) => {
-  res
-    .status(200)
-    .json({ success: true, msg: `Update wallet ${req.params.id}` });
-};
+exports.updateWallet = asyncHandler(async (req, res, next) => {
+  let wallet = await Wallet.findById(req.params.id);
+
+  if (!wallet) {
+    return next(
+      new ErrorResponse(`Wallet not found with id of ${req.params.id}`, 404)
+    );
+  }
+
+  wallet = await Wallet.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+  });
+  const newwallet = await Wallet.findById(wallet.id, '-__v');
+  res.status(200).json({ success: true, data: newwallet });
+});
 
 // @desc        Delete wallet
 // @route       DELETE /api/v1/wallets/:id
 // @access      Private
-exports.deleteWallet = (req, res, next) => {
-  res
-    .status(200)
-    .json({ success: true, msg: `Deleted wallet ${req.params.id}` });
-};
+exports.deleteWallet = asyncHandler(async (req, res, next) => {
+  const wallet = await Wallet.findById(req.params.id);
+
+  if (!wallet) {
+    return next(
+      new ErrorResponse(`Wallet not found with id of ${req.params.id}`, 404)
+    );
+  }
+
+  await wallet.remove();
+
+  res.status(200).json({ success: true, data: {} });
+});
