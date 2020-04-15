@@ -26,6 +26,8 @@ exports.getWallet = asyncHandler(async (req, res, next) => {
 // @route       POST /api/v1/wallets
 // @access      Private
 exports.createWallet = asyncHandler(async (req, res, next) => {
+  // Add user to req,body
+  req.body.userId = req.user.id;
   const wallet = await Wallet.create(req.body);
   const newwallet = await Wallet.findById(wallet.id, '-__v');
   res.status(201).json({
@@ -46,6 +48,16 @@ exports.updateWallet = asyncHandler(async (req, res, next) => {
     );
   }
 
+  // Make sure user is bootcamp owner
+  if (wallet.userId.toString() !== req.user.id && req.user.role !== 'admin') {
+    return next(
+      new ErrorResponse(
+        `User ${req.user.id} is not authorized to update this wallet`,
+        401
+      )
+    );
+  }
+
   wallet = await Wallet.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true,
@@ -63,6 +75,16 @@ exports.deleteWallet = asyncHandler(async (req, res, next) => {
   if (!wallet) {
     return next(
       new ErrorResponse(`Wallet not found with id of ${req.params.id}`, 404)
+    );
+  }
+
+  // Make sure user is bootcamp owner
+  if (wallet.userId.toString() !== req.user.id && req.user.role !== 'admin') {
+    return next(
+      new ErrorResponse(
+        `User ${req.user.id} is not authorized to delete this wallet`,
+        401
+      )
     );
   }
 
