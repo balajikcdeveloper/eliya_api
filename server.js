@@ -15,7 +15,7 @@ const connectDB = require('./config/db');
 //Load env vars
 dotenv.config({ path: './config/config.env' });
 
-const PORT = process.env.PORT || 6000;
+const PORT = process.env.PORT || 3000;
 const CURRENT_ENV = process.env.NODE_ENV;
 
 // Connect to database
