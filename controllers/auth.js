@@ -21,7 +21,7 @@ exports.register = asyncHandler(async (req, res, next) => {
 
   sendTokenResponse(user, 200, res);
 
-  res.status(200).json({ success: true, token });
+  res.status(200).json({ StatusCode: res.status, success: true, token });
 });
 
 // @desc      Login user
@@ -61,10 +61,7 @@ exports.logout = asyncHandler(async (req, res, next) => {
     httpOnly: true,
   });
 
-  res.status(200).json({
-    success: true,
-    data: {},
-  });
+  res.status(200).json({ status: res.statusCode, data: {} });
 });
 
 // @desc      Get current logged in user
@@ -202,7 +199,7 @@ const sendTokenResponse = (user, statusCode, res) => {
   }
 
   res.status(statusCode).cookie('token', token, options).json({
-    success: true,
+    status: res.statusCode,
     token,
   });
 };
