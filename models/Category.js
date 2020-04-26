@@ -1,22 +1,16 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
 
-const WalletSchema = new mongoose.Schema({
+const CategorySchema = new mongoose.Schema({
   name: {
     type: String,
     required: [true, 'please add a name'],
-    unique: [true, 'name already exists'],
     trim: true,
     maxlength: [50, 'Name can not be more than 50 characters'],
   },
   slug: String,
-  amount: {
-    type: Number,
-    default: 0,
-  },
-  description: {
+  icon: {
     type: String,
-    maxlength: [500, 'Description can not be more than 500 characters'],
   },
   userId: {
     type: mongoose.Schema.ObjectId,
@@ -33,10 +27,10 @@ const WalletSchema = new mongoose.Schema({
   },
 });
 
-// Create Wallet slug from the name
-WalletSchema.pre('save', function (next) {
+// Create Category slug from the name
+CategorySchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });
   next();
 });
 
-module.exports = mongoose.model('Wallet', WalletSchema);
+module.exports = mongoose.model('Category', CategorySchema);

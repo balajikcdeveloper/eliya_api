@@ -1,17 +1,28 @@
 const Wallet = require('../models/Wallet');
 const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
+const swaggerUi = require('swagger-ui-express');
+const swaggerJsdoc = require('swagger-jsdoc');
 
-// @desc        Get all wallets
-// @route       GET /api/v1/wallets
-// @access      Private
+/**
+ * @swagger
+ * /wallets:
+ *    get:
+ *      description: This should return all wallets
+ */
 exports.getWallets = (req, res, next) => {
   res.status(200).json(res.advancedResults);
 };
 
-// @desc        Get single wallet
-// @route       GET /api/v1/wallets/:id
-// @access      Private
+/**
+ * @swagger
+ * /wallets:
+ *  get:
+ *    description: Use to request wallet
+ *    responses:
+ *      '200':
+ *        description: A successful response
+ */
 exports.getWallet = asyncHandler(async (req, res, next) => {
   const wallet = await Wallet.findById(req.params.id, '-__v');
   if (!wallet) {
@@ -28,12 +39,21 @@ exports.getWallet = asyncHandler(async (req, res, next) => {
 exports.createWallet = asyncHandler(async (req, res, next) => {
   // Add user to req,body
   req.body.userId = req.user.id;
-  const wallet = await Wallet.create(req.body);
-  const newwallet = await Wallet.findById(wallet.id, '-__v');
-  res.status(201).json({
-    success: true,
-    data: newwallet,
+  const walletExist = await Wallet.findOne({
+    name: req.body.name,
   });
+  if (!walletExist) {
+    const wallet = await Wallet.create(req.body);
+    const newwallet = await Wallet.findById(wallet.id, '-__v');
+    res.status(201).json({
+      success: true,
+      data: newwallet,
+    });
+  } else {
+    return next(
+      new ErrorResponse(`Wallet found with name of ${req.body.name}`, 409)
+    );
+  }
 });
 
 // @desc        Update new wallet

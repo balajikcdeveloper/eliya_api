@@ -11,6 +11,10 @@ const rateLimit = require('express-rate-limit');
 const hpp = require('hpp');
 const cors = require('cors');
 const connectDB = require('./config/db');
+const swaggerUi = require('swagger-ui-express');
+//const swaggerDocument = require('./swagger.json');
+const swaggerDocument = require('./specs/swaggerDocuments');
+const swaggerJsdoc = require('swagger-jsdoc');
 
 //Load env vars
 dotenv.config({ path: './config/config.env' });
@@ -23,6 +27,8 @@ connectDB();
 
 //Route files
 const wallets = require('./routes/wallets');
+const categories = require('./routes/category');
+const budgets = require('./routes/budget');
 const auth = require('./routes/auth');
 
 const app = express();
@@ -60,8 +66,12 @@ app.use(hpp());
 // Enable CORS
 app.use(cors());
 
+app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
 //Mount Routes
 app.use('/api/v1/wallets', wallets);
+app.use('/api/v1/categories', categories);
+app.use('/api/v1/budgets', budgets);
 app.use('/api/v1/auth', auth);
 
 app.use(errorHandler);

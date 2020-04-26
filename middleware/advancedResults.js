@@ -20,7 +20,7 @@ const advancedResults = (model, populate) => async (req, res, next) => {
   );
 
   // Finding resource
-  query = model.find(JSON.parse(queryStr));
+  query = model.find(JSON.parse(queryStr), '-__v');
 
   // Select Fields
   if (req.query.select) {
@@ -69,7 +69,7 @@ const advancedResults = (model, populate) => async (req, res, next) => {
     };
   }
   res.advancedResults = {
-    success: true,
+    statusCode: res.statusCode,
     count: results.length,
     pagination,
     data: results,

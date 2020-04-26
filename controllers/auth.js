@@ -61,7 +61,10 @@ exports.logout = asyncHandler(async (req, res, next) => {
     httpOnly: true,
   });
 
-  res.status(200).json({ status: res.statusCode, data: {} });
+  res.status(200).json({
+    statusCode: res.statusCode,
+    data: {},
+  });
 });
 
 // @desc      Get current logged in user
@@ -71,7 +74,7 @@ exports.getMe = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.user.id);
 
   res.status(200).json({
-    success: true,
+    statusCode: res.statusCode,
     data: user,
   });
 });
@@ -91,7 +94,7 @@ exports.updateDetails = asyncHandler(async (req, res, next) => {
   });
 
   res.status(200).json({
-    success: true,
+    statusCode: res.statusCode,
     data: user,
   });
 });
@@ -186,7 +189,7 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
 const sendTokenResponse = (user, statusCode, res) => {
   // Create token
   const token = user.getSignedJwtToken();
-
+  console.log(user);
   const options = {
     expires: new Date(
       Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000
@@ -197,9 +200,15 @@ const sendTokenResponse = (user, statusCode, res) => {
   if (process.env.NODE_ENV === 'production') {
     options.secure = true;
   }
-
+  let dataSet = {
+    _id: user.id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+  };
   res.status(statusCode).cookie('token', token, options).json({
-    status: res.statusCode,
+    statusCode: res.statusCode,
     token,
+    data: dataSet,
   });
 };

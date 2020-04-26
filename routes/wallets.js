@@ -18,12 +18,12 @@ const advancedResults = require('../middleware/advancedResults');
 router
   .route('/')
   .get(protect, advancedResults(Wallet), getWallets)
-  .post(protect, authorize('manager', 'admin'), createWallet);
+  .post(protect, authorize('user', 'admin'), createWallet);
 
 router
   .route('/:id')
   .get(protect, getWallet)
   .put(protect, updateWallet)
-  .delete(protect, authorize('manager', 'admin'), deleteWallet);
+  .delete(protect, authorize('user', 'admin'), deleteWallet);
 
 module.exports = router;
