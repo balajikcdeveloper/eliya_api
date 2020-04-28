@@ -30,6 +30,8 @@ const wallets = require('./routes/wallets');
 const categories = require('./routes/category');
 const budgets = require('./routes/budget');
 const auth = require('./routes/auth');
+const expenseTypes = require('./routes/expenseType');
+const expenses = require('./routes/expense');
 
 const app = express();
 
@@ -73,6 +75,8 @@ app.use('/api/v1/wallets', wallets);
 app.use('/api/v1/categories', categories);
 app.use('/api/v1/budgets', budgets);
 app.use('/api/v1/auth', auth);
+app.use('/api/v1/expensetypes', expenseTypes);
+app.use('/api/v1/expenses', expenses);
 
 app.use(errorHandler);
 
