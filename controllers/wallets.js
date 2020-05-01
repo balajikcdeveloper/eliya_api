@@ -30,7 +30,7 @@ exports.getWallet = asyncHandler(async (req, res, next) => {
       new ErrorResponse(`Wallet not found with id of ${req.params.id}`, 404)
     );
   }
-  res.status(200).json({ success: true, data: wallet });
+  res.status(200).json({ status: res.statusCode, data: wallet });
 });
 
 // @desc        Create new wallet
@@ -39,21 +39,13 @@ exports.getWallet = asyncHandler(async (req, res, next) => {
 exports.createWallet = asyncHandler(async (req, res, next) => {
   // Add user to req,body
   req.body.userId = req.user.id;
-  const walletExist = await Wallet.findOne({
-    name: req.body.name,
+  const wallet = await Wallet.create(req.body);
+  const newwallet = await Wallet.findById(wallet.id, '-__v');
+  res.status(201).json({
+    status: res.statusCode,
+    data: newwallet,
   });
-  if (!walletExist) {
-    const wallet = await Wallet.create(req.body);
-    const newwallet = await Wallet.findById(wallet.id, '-__v');
-    res.status(201).json({
-      success: true,
-      data: newwallet,
-    });
-  } else {
-    return next(
-      new ErrorResponse(`Wallet found with name of ${req.body.name}`, 409)
-    );
-  }
+
 });
 
 // @desc        Update new wallet
@@ -83,7 +75,7 @@ exports.updateWallet = asyncHandler(async (req, res, next) => {
     runValidators: true,
   });
   const newwallet = await Wallet.findById(wallet.id, '-__v');
-  res.status(200).json({ success: true, data: newwallet });
+  res.status(200).json({ status: res.statusCode, data: newwallet });
 });
 
 // @desc        Delete wallet
@@ -110,5 +102,5 @@ exports.deleteWallet = asyncHandler(async (req, res, next) => {
 
   await wallet.remove();
 
-  res.status(200).json({ success: true, data: {} });
+  res.status(200).json({ status: res.statusCode, data: {} });
 });
