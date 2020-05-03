@@ -19,7 +19,7 @@ exports.getCategory = asyncHandler(async (req, res, next) => {
       new ErrorResponse(`Category not found with id of ${req.params.id}`, 404)
     );
   }
-  res.status(200).json({ success: true, data: category });
+  res.status(200).json({ status: res.statusCode, data: category });
 });
 
 // @desc        Create new category
@@ -31,7 +31,7 @@ exports.createCategory = asyncHandler(async (req, res, next) => {
   const category = await Category.create(req.body);
   const newcategory = await Category.findById(category.id, '-__v');
   res.status(201).json({
-    success: true,
+    status: res.statusCode,
     data: newcategory,
   });
 });
@@ -63,7 +63,7 @@ exports.updateCategory = asyncHandler(async (req, res, next) => {
     runValidators: true,
   });
   const newcategory = await Category.findById(category.id, '-__v');
-  res.status(200).json({ success: true, data: newcategory });
+  res.status(200).json({ status: res.statusCode, data: newcategory });
 });
 
 // @desc        Delete category
@@ -90,5 +90,5 @@ exports.deleteCategory = asyncHandler(async (req, res, next) => {
 
   await category.remove();
 
-  res.status(200).json({ success: true, data: {} });
+  res.status(200).json({ status: res.statusCode, data: {} });
 });
